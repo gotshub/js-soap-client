@@ -1,10 +1,13 @@
 /*****************************************************************************\
 
- Javascript "SOAP Client" library
- 
- @version: 2.4 - 2007.12.21
- @author: Matteo Casati - http://www.guru4.net/
- 
+ Javascript SOAP Client
+ Forked from javascriptsoapclient.codeplex.com and improved by gtathub.
+
+ For new versions check: https://github.com/gtathub/js-soap-client
+
+ * Original work by Matteo Casati (based on v2.4 from 2007-12-21)
+ * Improved by Gordon Tschirner (https://github.com/gtathub)
+ * Licensed under Creative Commons (by SA) 2.5
 \*****************************************************************************/
 
 function SOAPClientParameters()
