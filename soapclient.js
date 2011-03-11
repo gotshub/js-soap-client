@@ -26,7 +26,7 @@ function SOAPClientParameters()
                 case "number":
                 case "boolean":
                 case "object":
-                    xml += "<" + p + ">" + SOAPClientParameters._serialize(_pl[p]) + "</" + p + ">";
+                    xml += SOAPClientParameters._serialize(p, _pl[p]);
                     break;
                 default:
                     break;
@@ -35,17 +35,21 @@ function SOAPClientParameters()
         return xml;
     }
 }
-SOAPClientParameters._serialize = function(o)
+SOAPClientParameters._serialize = function(t, o)
 {
     var s = "";
     switch(typeof(o))
     {
         case "string":
+            s += "<" + t + ">";
             s += o.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            s += "</" + t + ">";
             break;
         case "number":
         case "boolean":
-            s += o.toString();
+            s += "<" + t + ">";
+            s += o.toString(); 
+            s += "</" + t + ">";
             break;
         case "object":
             // Date
@@ -74,11 +78,15 @@ SOAPClientParameters._serialize = function(o)
                 tzminutes = (tzminutes.toString().length == 1) ? "0" + tzminutes.toString() : tzminutes.toString();
                 tzhours = (tzhours.toString().length == 1) ? "0" + tzhours.toString() : tzhours.toString();
                 var timezone = ((o.getTimezoneOffset() < 0) ? "+" : "-") + tzhours + ":" + tzminutes;
+                s += "<" + t + ">";
                 s += year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds + timezone;
+                s += "</" + t + ">";
             }
             // Array
             else if(o.constructor.toString().indexOf("function Array()") > -1)
             {
+				
+                s += "<" + t + " SOAP-ENC:arrayType=\"SOAP-ENC:Array[" + o.length + "]\" xsi:type=\"SOAP-ENC:Array\">";
                 for(var p in o)
                 {
                     if(!isNaN(p))   // linear array
@@ -102,16 +110,23 @@ SOAPClientParameters._serialize = function(o)
                                 type = "DateTime";
                                 break;
                         }
-                        s += "<" + type + ">" + SOAPClientParameters._serialize(o[p]) + "</" + type + ">"
+                        s += SOAPClientParameters._serialize("item", o[p]);
                     }
                     else    // associative array
-                        s += "<" + p + ">" + SOAPClientParameters._serialize(o[p]) + "</" + p + ">"
+                    {
+                        SOAPClientParameters._serialize("item", o[p]);
+                    }
                 }
+                s += "</" + t + ">";
             }
             // Object or custom function
             else
                 for(var p in o)
-                    s += "<" + p + ">" + SOAPClientParameters._serialize(o[p]) + "</" + p + ">";
+                {
+                    s += "<" + t + ">";
+                    s += SOAPClientParameters._serialize(p, o[p]);
+                    s += "</" + t + ">";
+                }
             break;
         default:
             break; // throw new Error(500, "SOAPClientParameters: type '" + typeof(o) + "' is not supported");
