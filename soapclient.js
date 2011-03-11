@@ -259,7 +259,15 @@ SOAPClient._node2object = function(node, wsdlTypes)
     // leaf node
     if (node.childNodes.length == 1 && (node.childNodes[0].nodeType == 3 || node.childNodes[0].nodeType == 4))
         return SOAPClient._node2object(node.childNodes[0], wsdlTypes);
-    var isarray = SOAPClient._getTypeFromWsdl(node.nodeName, wsdlTypes).toLowerCase().indexOf("arrayof") != -1;
+    var isArray = false;
+    var tmpNodeNameObject = new Object;
+    for(var i = 0; !isArray && i< node.childNodes.length; i++) {
+        if(typeof tmpNodeNameObject[node.childNodes[i].nodeName] == "undefined")
+            tmpNodeNameObject[node.childNodes[i].nodeName] = true;
+        else isArray = true;
+            
+    }
+    var isarray = isArray || SOAPClient._getTypeFromWsdl(node.nodeName, wsdlTypes).toLowerCase().indexOf("arrayof") != -1;
     // object node
     if(!isarray)
     {
