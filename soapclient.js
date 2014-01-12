@@ -141,6 +141,9 @@ function SOAPClient() {}
 
 SOAPClient.username = null;
 SOAPClient.password = null;
+SOAPClient.auth = false;
+SOAPClient.authUser = null;
+SOAPClient.authPass = null;
 
 SOAPClient.invoke = function(url, method, parameters, async, callback)
 {
@@ -192,6 +195,10 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
     "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
     "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
     "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+    (SOAPClient.auth?"<soap:Header><AuthHeader xmlns=\"" + ns + "\">" +
+    "<Username>"+SOAPClient.authUser+"</Username>" +
+    "<Password>"+SOAPClient.authPass+"</Password>" +
+    "</AuthHeader></soap:Header>":"") +
     "<soap:Body>" +
     "<" + method + " xmlns=\"" + ns + "\">" +
     parameters.toXml() +
