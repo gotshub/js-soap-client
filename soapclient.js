@@ -13,11 +13,16 @@
 function SOAPClientParameters()
 {
     var _pl = new Array();
+    var _sl = new Array();
     this.add = function(name, value)
     {
         _pl[name] = value;
         return this;
-    }
+    };
+    this.addSchema = function(prefix, uri) {
+        _sl[prefix] = uri;
+        return this;
+    };
     this.toXml = function()
     {
         var xml = "";
@@ -36,6 +41,17 @@ function SOAPClientParameters()
             }
         }
         return xml;
+    };
+    this.printSchemaList = function() {
+        var list = [];
+
+        for (var prefix in _sl) {
+            if (_sl.hasOwnProperty(prefix)) {
+                list.push('xmlns:' + prefix + '="' + _sl[prefix] + '"');
+            }
+        }
+
+        return list.join(' ');
     }
 }
 SOAPClientParameters._serialize = function(t, o)
@@ -194,7 +210,9 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
     "<soap:Envelope " +
     "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
     "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
-    "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+    "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+    parameters.printSchemaList() +
+    ">" +
     (SOAPClient.auth?"<soap:Header><AuthHeader xmlns=\"" + ns + "\">" +
     "<Username>"+SOAPClient.authUser+"</Username>" +
     "<Password>"+SOAPClient.authPass+"</Password>" +
