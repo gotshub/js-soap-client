@@ -160,6 +160,7 @@ SOAPClient.password = null;
 SOAPClient.auth = false;
 SOAPClient.authUser = null;
 SOAPClient.authPass = null;
+SOAPClient.explicitNS = false;
 
 SOAPClient.invoke = function(url, method, parameters, async, callback)
 {
@@ -211,6 +212,7 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
     "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
     "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
     "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+    (SOAPClient.explicitNS?"xmlns:tns=\"" + ns + "\"":"") +
     parameters.printSchemaList() +
     ">" +
     (SOAPClient.auth?"<soap:Header><AuthHeader xmlns=\"" + ns + "\">" +
@@ -218,9 +220,10 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
     "<Password>"+SOAPClient.authPass+"</Password>" +
     "</AuthHeader></soap:Header>":"") +
     "<soap:Body>" +
-    "<" + method + " xmlns=\"" + ns + "\">" +
+    (SOAPClient.explicitNS?"<tns:" + method + ">":"<" + method + " xmlns=\"" + ns + "\">") +
     parameters.toXml() +
-    "</" + method + "></soap:Body></soap:Envelope>";
+    (SOAPClient.explicitNS?"</tns:" + method + ">":"</" + method + ">") +
+    "</soap:Body></soap:Envelope>";
     // send request
     var xmlHttp = SOAPClient._getXmlHttp();
     if (SOAPClient.userName && SOAPClient.password){
