@@ -7,7 +7,7 @@
 
  * Original work by Matteo Casati (based on v2.4 from 2007-12-21)
  * Improved by Gordon Tschirner (https://github.com/gtathub)
- * Licensed under Creative Commons (by SA) 2.5
+ * Licensed under GPLv2: https://github.com/gtathub/js-soap-client.git
 \*****************************************************************************/
 
 function SOAPClientParameters()
