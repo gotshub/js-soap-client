@@ -161,6 +161,8 @@ SOAPClient.auth = false;
 SOAPClient.authUser = null;
 SOAPClient.authPass = null;
 SOAPClient.explicitNS = false;
+SOAPClient.interface = "";
+SOAPClient.cors = false
 
 SOAPClient.invoke = function(url, method, parameters, async, callback)
 {
@@ -182,7 +184,18 @@ SOAPClient._loadWsdl = function(url, method, parameters, async, callback)
         return SOAPClient._sendSoapRequest(url, method, parameters, async, callback, wsdl);
     // get wsdl
     var xmlHttp = SOAPClient._getXmlHttp();
-    xmlHttp.open("GET", url + "?wsdl", async);
+    if (SOAPClient.userName && SOAPClient.password){
+    	xmlHttp.open("GET", url + "?wsdl", async);
+    	// Some WS implementations (i.e. BEA WebLogic Server 10.0 JAX-WS) don't support Challenge/Response HTTP BASIC, so we send authorization headers in the first request
+        xmlHttp.setRequestHeader("Authorization", "Basic " + SOAPClient._toBase64(SOAPClient.userName + ":" + SOAPClient.password));
+    }
+    else {
+    	xmlHttp.open("GET", url + "?wsdl", async);
+    }
+    if (SOAPClient.cors) {
+    	xmlHttp.withCredentials = true;
+    	xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    }
     if(async)
     {
         xmlHttp.onreadystatechange = function()
@@ -231,11 +244,16 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
         // Some WS implementations (i.e. BEA WebLogic Server 10.0 JAX-WS) don't support Challenge/Response HTTP BASIC, so we send authorization headers in the first request
         xmlHttp.setRequestHeader("Authorization", "Basic " + SOAPClient._toBase64(SOAPClient.userName + ":" + SOAPClient.password));
     }
-    else
+    else{
         xmlHttp.open("POST", url, async);
-    var soapaction = ((ns.lastIndexOf("/") != ns.length - 1) ? ns + "/" : ns) + method;
+    }
+    var soapaction = ((ns.lastIndexOf("/") != ns.length - 1) ? ns + "/" : ns) + ((SOAPClient.interface != "") ? SOAPClient.interface + "/" : "") + method;
     xmlHttp.setRequestHeader("SOAPAction", soapaction);
     xmlHttp.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
+    if (SOAPClient.cors) {
+    	xmlHttp.withCredentials = true;
+    	xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    }
     if(async)
     {
         xmlHttp.onreadystatechange = function()
