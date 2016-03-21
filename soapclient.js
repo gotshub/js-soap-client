@@ -71,6 +71,13 @@ SOAPClientParameters._serialize = function(t, o)
             s += "</" + t + ">";
             break;
         case "object":
+			//	if the object is null just output an empty tag
+			if( o === null )
+			{
+				s += "<" + t + "/>";
+				break;
+			}
+			
             // Date
             if(o.constructor.toString().indexOf("function Date()") > -1)
             {
@@ -140,12 +147,12 @@ SOAPClientParameters._serialize = function(t, o)
             }
             // Object or custom function
             else
-                for(var p in o)
-                {
-                    s += "<" + t + ">";
-                    s += SOAPClientParameters._serialize(p, o[p]);
-                    s += "</" + t + ">";
-                }
+			{
+				s += "<" + t + ">";
+				for(var p in o)
+					s += SOAPClientParameters._serialize(p, o[p]);
+				s += "</" + t + ">";
+			}
             break;
         default:
             break; // throw new Error(500, "SOAPClientParameters: type '" + typeof(o) + "' is not supported");
