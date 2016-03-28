@@ -74,8 +74,7 @@ SOAPClientParameters._serialize = function(t, o)
 			//	if the object is null just output an empty tag
 			if( o === null )
 			{
-				s += "<" + t + ">";
-				s += "</" + t + ">";
+				s += "<" + t + "/>";
 				break;
 			}
 			
