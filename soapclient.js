@@ -187,7 +187,7 @@ SOAPClient._loadWsdl = function(url, method, parameters, async, callback)
 {
     // load from cache?
     var wsdl = SOAPClient_cacheWsdl[url];
-    if(typeof wsdl != "undefined" && wsdl != "" && wsdl != "undefined")
+    if(wsdl != null && typeof wsdl != "undefined" && wsdl != "" && wsdl != "undefined")
         return SOAPClient._sendSoapRequest(url, method, parameters, async, callback, wsdl);
     // get wsdl
     var xmlHttp = SOAPClient._getXmlHttp();
