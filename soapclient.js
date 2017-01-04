@@ -277,11 +277,17 @@ SOAPClient._sendSoapRequest = function(url, method, parameters, async, callback,
 SOAPClient._onSendSoapRequest = function(method, async, callback, wsdl, req) 
 {
     var o = null;
-    var nd = SOAPClient._getElementsByTagName(req.responseXML, method + "Result");
-    if(nd.length == 0)
-        nd = SOAPClient._getElementsByTagName(req.responseXML, "return");	// PHP web Service?
-    if(nd.length == 0)
-        nd = SOAPClient._getElementsByTagName(req.responseXML, method + "Return");	// new PHP web Service?
+    var nd = [];
+
+    var tryTags = [method + "Result", method + "Response", "return", method + "Return"];
+
+    for(var i = 0; i < tryTags.length; i++)
+    {
+        nd = SOAPClient._getElementsByTagName(req.responseXML, tryTags[i]);
+        if(nd.length !== 0)
+            break;
+    }
+
     if(nd.length == 0)
     {
         if(req.responseXML.getElementsByTagName("faultcode").length > 0)
