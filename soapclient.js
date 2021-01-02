@@ -318,8 +318,8 @@ SOAPClient._node2object = function(node, wsdlTypes)
     // text node
     if(node.nodeType == 3 || node.nodeType == 4)
         return SOAPClient._extractValue(node, wsdlTypes);
-    if (node.nodeType == 1)
-      return node.textContent;
+    if (node.childNodes.length === 0 && node.nodeType === 1)
+      return "";
     // leaf node
     if (node.childNodes.length == 1 && (node.childNodes[0].nodeType == 3 || node.childNodes[0].nodeType == 4))
         return SOAPClient._node2object(node.childNodes[0], wsdlTypes);
